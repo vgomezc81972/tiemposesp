@@ -124,14 +124,14 @@ with st.container():
         df[mask]['FECHA_LLEGADA'] = pd.to_datetime(df[mask]['FECHA_LLEGADA'])
 
     #   Ahora puedes acceder al día de la semana usando el atributo 'dayofweek'
-        df[mask]['day_of_week'] = df[mask]['FECHA_LLEGADA'].dt.dayofweek
+        df['day_of_week'] = df[mask]['FECHA_LLEGADA'].dt.dayofweek
 
         promedio = df[mask]['Tiempo_Minutos_Total'].median()
         df[mask].loc[df['Tiempo_Minutos_Total'] > 420, 'Tiempo_Minutos_Total'] = promedio
         df[mask].loc[df['Tiempo_Minutos_Total'] < 0, 'Tiempo_Minutos_Total'] = promedio
 
     # Calcula el promedio de las predicciones para cada día de la semana
-        average_predicted_minutes = df[mask].groupby('day_of_week')['Tiempo_Minutos_Total'].mean()
+        average_predicted_minutes = df.groupby('day_of_week')['Tiempo_Minutos_Total'].mean()
 
     # Establece los índices explícitamente
         average_predicted_minutes.index = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
