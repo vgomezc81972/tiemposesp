@@ -184,17 +184,26 @@ with st.container():
 
     with left_column:
         st.header("DIA DE LA SEMANA")
-        st.write("Esta imagen muestra Por dias de la semana del Dia")
+        st.write("Esta imagen muestra Prediccion Por dias de la semana")
     
-        # Ahora puedes acceder al día de la semana usando el atributo 'dayofweek'
-        df['day_of_week'] = df[mask]['FECHA_LLEGADA'].dt.dayofweek
+        dfp = dataset[['FECHA_LLEGADA', 'Tiempo_Minutos_Total']].copy()
+        dfp.rename(columns={'FECHA_LLEGADA': 'ds', 'Tiempo_Minutos_Total': 'y'}, inplace=True)
+        dfp["y"] = pd.to_numeric(dfp["y"],errors='coerce')
 
-        promedio = df[mask]['Tiempo_Minutos_Total'].median()
-        df[mask].loc[df[mask]['Tiempo_Minutos_Total'] > 420, 'Tiempo_Minutos_Total'] = promedio
-        df[mask].loc[df[mask]['Tiempo_Minutos_Total'] < 0, 'Tiempo_Minutos_Total'] = promedio
+        median = dfp['y'].median()
+        dfp.loc[dfp['y'] > 420, 'y'] = median
+        dfp.loc[dfp['y'] < 0, 'y'] = median
+
+        m = Prophet()
+        m.fit(df[mask])
+        future = m.make_future_dataframe(periods=90)
+        forecast = m.predict(future)
+
+        # Añade el día de la semana a las predicciones
+        forecast['day_of_week'] = forecast['ds'].dt.dayofweek
 
         # Calcula el promedio de las predicciones para cada día de la semana
-        average_predicted_minutes = df.groupby('day_of_week')['Tiempo_Minutos_Total'].mean()
+        average_predicted_minutes = forecast.groupby('day_of_week')['yhat'].mean()
 
         # Establece los índices explícitamente
         average_predicted_minutes.index = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
@@ -203,8 +212,8 @@ with st.container():
         fig, ax = plt.subplots(figsize=(10, 6))
         sns.barplot(x=average_predicted_minutes.index, y=average_predicted_minutes.values, palette='viridis', ax=ax)
         ax.set_xlabel('Día de la Semana')
-        ax.set_ylabel('Promedio del Tiempo (minutos)')
-        ax.set_title('Promedio del Tiempo por Día de la Semana')
+        ax.set_ylabel('Prediccion Promedio del Tiempo (minutos)')
+        ax.set_title('Prediccion Promedio del Tiempo por Día de la Semana')
 
         # Añade etiquetas a las barras
         for i, bar in enumerate(ax.patches):
