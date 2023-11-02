@@ -3,4 +3,5 @@ numpy
 pandas
 pydeck
 streamlit
+matplotlib
 openpyxl>=3.0.10
