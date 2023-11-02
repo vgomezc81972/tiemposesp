@@ -37,8 +37,7 @@ url = "https://github.com/Vitotoju/Compensar/raw/main/tiempos_urgencias.xlsx"
 dataset = load_data(url)
 df = dataset
 
-# Asegúrate de que la columna 'ds' sea de tipo datetime
-df['FECHA_LLEGADA'] = pd.to_datetime(df['FECHA_LLEGADA'])
+
 
 # Cadena Más Común (Moda)  -  para reemplazar los datos vacios con el valor más frecuente o la moda
 promedio = df['Tiempo_Minutos_Total'].median()
@@ -121,6 +120,9 @@ with st.container():
         st.header("DIA DE LA SEMANA")
         st.write("Esta imagen muestra Por dias de la semana del Dia")
     
+    # Asegúrate de que la columna 'ds' sea de tipo datetime
+        df[mask]['FECHA_LLEGADA'] = pd.to_datetime(df[mask]['FECHA_LLEGADA'])
+
     #   Ahora puedes acceder al día de la semana usando el atributo 'dayofweek'
         df[mask]['day_of_week'] = df[mask]['FECHA_LLEGADA'].dt.dayofweek
 
