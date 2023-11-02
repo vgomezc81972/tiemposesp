@@ -127,7 +127,7 @@ with st.container():
     df[mask].loc[df['Tiempo_Minutos_Total'] < 0, 'Tiempo_Minutos_Total'] = promedio
 
 # Calcula el promedio de las predicciones para cada día de la semana
-    average_predicted_minutes = df.groupby('day_of_week')['Tiempo_Minutos_Total'].mean()
+    average_predicted_minutes = df[mask].groupby('day_of_week')['Tiempo_Minutos_Total'].mean()
 
 # Establece los índices explícitamente
     average_predicted_minutes.index = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
