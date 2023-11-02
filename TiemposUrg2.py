@@ -208,7 +208,7 @@ with st.container():
 
         # Trazar el gráfico de barras
         fig, ax = plt.subplots(figsize=(10, 6))
-        sns.barplot(x=average_predicted_minutes.index, y=average_predicted_minutes.values, palette='viridis', ax=ax)
+        sns.barplot(x=average_predicted_minutes.index, y=average_predicted_minutes.values, palette='plasma', ax=ax)
         ax.set_xlabel('Día de la Semana')
         ax.set_ylabel('Prediccion Promedio del Tiempo (minutos)')
         ax.set_title('Prediccion Promedio del Tiempo por Día de la Semana')
@@ -241,7 +241,7 @@ with st.container():
 
         # Trazar el gráfico de barras
         fig, ax = plt.subplots(figsize=(10, 6))
-        sns.barplot(x=average_predicted_minutes.index, y=average_predicted_minutes.values, palette='viridis', ax=ax)
+        sns.barplot(x=average_predicted_minutes.index, y=average_predicted_minutes.values, palette='cividis', ax=ax)
         ax.set_xlabel('Hora del Dia')
         ax.set_ylabel('Promedio del Tiempo (minutos)')
         ax.set_title('Promedio del Tiempo en Horas')
