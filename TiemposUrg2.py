@@ -195,7 +195,7 @@ with st.container():
         dfp.loc[dfp['y'] < 0, 'y'] = median
 
         m = Prophet()
-        m.fit(df[mask])
+        m.fit(dfp[mask])
         future = m.make_future_dataframe(periods=90)
         forecast = m.predict(future)
 
