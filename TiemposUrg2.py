@@ -191,7 +191,7 @@ with st.container():
         average_predicted_minutes = df.groupby('Hora_del_dia')['Tiempo_Minutos_Total'].mean()
 
         # Establece los índices explícitamente
-        average_predicted_minutes.index = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
+        # average_predicted_minutes.index = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
 
         # Trazar el gráfico de barras
         fig, ax = plt.subplots(figsize=(10, 6))
