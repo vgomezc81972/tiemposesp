@@ -53,9 +53,9 @@ filtro_centro = st.sidebar.selectbox('Filtrar por Centro', ['Todos'] + df['CENTR
 filtro_mes = st.sidebar.selectbox('Filtrar por Mes', ['Todos'] + df['MES'].unique().tolist())
 filtro_clasificacion = st.sidebar.selectbox('Filtrar por Triague', ['Todos'] + df['CLASIFICACION_TRIAGE'].unique().tolist())
 
-st.sidebar.header("Opciones a filtrar: ")
+st.sidebar.header("Prediccion en Dias: ")
 opciones = ['Todos', 10, 15, 30, 90]
-filtro_Prediccion = st.sidebar.selectbox('Filtrar por Triague', opciones)
+filtro_Prediccion = st.sidebar.selectbox('Filtrar por Dias', opciones)
 
 st.sidebar.info('Created by Victor - Diana')
 
