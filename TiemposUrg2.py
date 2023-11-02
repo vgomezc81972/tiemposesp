@@ -148,14 +148,14 @@ with st.container():
         st.write("Esta imagen muestra Por dias de la semana del Dia")
     
     #   Ahora puedes acceder al día de la semana usando el atributo 'dayofweek'
-        df['day_of_week'] = df['FECHA_LLEGADA'].dt.dayofweek
+        df[mask]['day_of_week'] = df[mask]['FECHA_LLEGADA'].dt.dayofweek
 
-        promedio = df['Tiempo_Minutos_Total'].median()
-        df.loc[df['Tiempo_Minutos_Total'] > 420, 'Tiempo_Minutos_Total'] = promedio
-        df.loc[df['Tiempo_Minutos_Total'] < 0, 'Tiempo_Minutos_Total'] = promedio
+        promedio = df[mask]['Tiempo_Minutos_Total'].median()
+        df[mask].loc[df['Tiempo_Minutos_Total'] > 420, 'Tiempo_Minutos_Total'] = promedio
+        df[mask].loc[df['Tiempo_Minutos_Total'] < 0, 'Tiempo_Minutos_Total'] = promedio
 
     # Calcula el promedio de las predicciones para cada día de la semana
-        average_predicted_minutes = df.groupby('day_of_week')['Tiempo_Minutos_Total'].mean()
+        average_predicted_minutes = df[mask].groupby('day_of_week')['Tiempo_Minutos_Total'].mean()
 
     # Establece los índices explícitamente
         average_predicted_minutes.index = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
@@ -181,14 +181,14 @@ with st.container():
         st.write("Esta imagen muestra Por Horas del Dia")
     
     #   Ahora puedes acceder al día de la semana usando el atributo 'dayofweek'
-        df['Hora_del_dia'] = df['FECHA_LLEGADA'].dt.hour
+        df[mask]['Hora_del_dia'] = df[mask]['FECHA_LLEGADA'].dt.hour
 
-        promedio = df['Tiempo_Minutos_Total'].median()
-        df.loc[df['Tiempo_Minutos_Total'] > 420, 'Tiempo_Minutos_Total'] = promedio
-        df.loc[df['Tiempo_Minutos_Total'] < 0, 'Tiempo_Minutos_Total'] = promedio
+        promedio = df[mask]['Tiempo_Minutos_Total'].median()
+        df[mask].loc[df[mask]['Tiempo_Minutos_Total'] > 420, 'Tiempo_Minutos_Total'] = promedio
+        df[mask].loc[df[mask]['Tiempo_Minutos_Total'] < 0, 'Tiempo_Minutos_Total'] = promedio
 
     # Calcula el promedio de las predicciones para cada día de la semana
-        average_predicted_minutes = df.groupby('Hora_del_dia')['Tiempo_Minutos_Total'].mean()
+        average_predicted_minutes = df[mask].groupby('Hora_del_dia')['Tiempo_Minutos_Total'].mean()
 
     # Trazar el gráfico de barras
         fig, ax = plt.subplots(figsize=(10, 6))
