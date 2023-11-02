@@ -6,10 +6,10 @@
 import streamlit as st
 import types  # Importa types en lugar de builtins
 import pandas as pd
-from prophet import Prophet
 import matplotlib.pyplot as plt
 import seaborn as sns
 from typing import List, Tuple
+from prophet import Prophet
 
 def set_page_config():
     st.set_page_config(
@@ -158,9 +158,6 @@ with st.container():
 
         # Calcula el promedio de las predicciones para cada día de la semana
         average_predicted_minutes = df.groupby('Hora_del_dia')['Tiempo_Minutos_Total'].mean()
-
-        # Establece los índices explícitamente
-        # average_predicted_minutes.index = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
 
         # Trazar el gráfico de barras
         fig, ax = plt.subplots(figsize=(10, 6))
