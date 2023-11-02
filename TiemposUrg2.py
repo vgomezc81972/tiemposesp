@@ -87,12 +87,10 @@ else:
 with st.container():
   st.subheader("Bienvenidos  :wave:")
   st.title("📊 Tiempos Atencion de Urgencias")
-  st.write(" Esta es una pagina para mostrar los resultados")
 
   # Combinar las máscaras de filtro
   mask = mask_centro & mask_mes & mask_clasificacion
   numero_resultados = df[mask].shape[0]
-  st.markdown(f'*Resultados Disponibles:{numero_resultados}*')
 
 ## KPIs
 
@@ -101,8 +99,10 @@ with st.container():
         total_minutos1 =(df[mask]['Tiempo_Minutos_Total'].sum())
         Total_minutos = f"{total_minutos1:.2f}M"
         total_pacientes = df[mask]['PACIENTE_#_DOCUMENTO'].nunique()
-        Promedio_minutos = f"{total_minutos1 / total_pacientes:.2f}K"
-        return [Total_minutos, total_pacientes, Promedio_minutos, total_pacientes]
+        Promedio_minutos = f"{total_minutos1 / numero_resultados:.2f}K"
+        Promedio_minutos2 =(df[mask]['Tiempo_Minutos_Total'].mean())
+        promedio = f"{Promedio_minutos2:.2f}K"
+        return [Total_minutos, total_pacientes, promedio, numero_resultados]
   
 
   def display_kpi_metrics(kpis: List[float], kpi_names: List[str]):
@@ -111,14 +111,30 @@ with st.container():
             col.metric(label=kpi_name, value=kpi_value)
 
 
-  kpis = calculate_kpis(df)
-  kpi_names = ["Vlr_Ventas", "Cantidad Pacientes", "Promedio Minutos", "Cantidad Pacientes"]
-  display_kpi_metrics(kpis, kpi_names)
+  @st.cache_data
+  def calculate_kpisp(df: pd.DataFrame) -> List[float]:
+        total_minutos1 =(df[mask]['Tiempo_Minutos_Total'].sum())
+        Total_minutos = f"{total_minutos1:.2f}M"
+        total_pacientes = df[mask]['PACIENTE_#_DOCUMENTO'].nunique()
+        Promedio_minutos = f"{total_minutos1 / numero_resultados:.2f}K"
+        Promedio_minutos2 =(df[mask]['Tiempo_Minutos_Total'].mean())
+        promedio = f"{Promedio_minutos2:.2f}K"
+        return [Total_minutos, total_pacientes, promedio, numero_resultados]
+  
 
+  def display_kpi_metricsp(kpis: List[float], kpi_names: List[str]):
+        st.header("KPI Metrics")
+        for i, (col, (kpi_name, kpi_value)) in enumerate(zip(st.columns(4), zip(kpi_names, kpis))):
+            col.metric(label=kpi_name, value=kpi_value)            
 
 with st.container():
     st.write("---")
     st.header("Historico de Tiempo de Espera de Atencion de Pacientes")
+
+    kpis = calculate_kpis(df)
+    kpi_names = ["Vlr_Ventas", "Cantidad Pacientes", "Promedio Minutos", "Cantidad Atenciones"]
+    display_kpi_metrics(kpis, kpi_names)
+   
     left_column , right_column = st.columns(2)
 
     with left_column:
@@ -128,12 +144,12 @@ with st.container():
         # Ahora puedes acceder al día de la semana usando el atributo 'dayofweek'
         df['day_of_week'] = df[mask]['FECHA_LLEGADA'].dt.dayofweek
 
-        promedio = df[mask]['Tiempo_Minutos_Total'].median()
-        df[mask].loc[df[mask]['Tiempo_Minutos_Total'] > 420, 'Tiempo_Minutos_Total'] = promedio
-        df[mask].loc[df[mask]['Tiempo_Minutos_Total'] < 0, 'Tiempo_Minutos_Total'] = promedio
+       # promedio = df[mask]['Tiempo_Minutos_Total'].median()
+       # df[mask].loc[df[mask]['Tiempo_Minutos_Total'] > 420, 'Tiempo_Minutos_Total'] = promedio
+       # df[mask].loc[df[mask]['Tiempo_Minutos_Total'] < 0, 'Tiempo_Minutos_Total'] = promedio
 
         # Calcula el promedio de las predicciones para cada día de la semana
-        average_predicted_minutes = df.groupby('day_of_week')['Tiempo_Minutos_Total'].mean()
+        average_predicted_minutes = df[mask].groupby('day_of_week')['Tiempo_Minutos_Total'].mean()
 
         # Establece los índices explícitamente
         average_predicted_minutes.index = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
@@ -187,6 +203,7 @@ with st.container():
 with st.container():
     st.write("---")
     st.header("Predicción de Tiempo de Espera de Atencion de Pacientes")
+
     left_column , right_column = st.columns(2)
 
     with left_column:
@@ -214,6 +231,10 @@ with st.container():
 
         # Establece los índices explícitamente
         average_predicted_minutes.index = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
+
+       # kpisp = calculate_kpisp(forecast)
+       # kpi_namesp = ["Vlr_Ventas", "Cantidad Pacientes", "Promedio Minutos", "Cantidad Atenciones"]
+       # display_kpi_metricsp(kpisp, kpi_namesp)
 
         # Trazar el gráfico de barras
         fig, ax = plt.subplots(figsize=(10, 6))
