@@ -5,4 +5,5 @@ pydeck
 streamlit
 matplotlib
 seaborn
+prophet
 openpyxl>=3.0.10
