@@ -9,7 +9,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from typing import List, Tuple
-from prophet import Prophet
 
 def set_page_config():
     st.set_page_config(
