@@ -67,6 +67,11 @@ if filtro_centro == 'Todos':
 else:
     mask_centro = df['CENTRO_ATENCION'] == filtro_centro
 
+if filtro_Prediccion == 'Todos':
+    mask_Prediccion = 90
+else:
+    mask_Prediccion = filtro_Prediccion
+
 if filtro_mes == 'Todos':
     mask_mes = df['MES'].notna()
 else:
@@ -198,7 +203,7 @@ with st.container():
 
         m = Prophet()
         m.fit(dfp[mask])
-        future = m.make_future_dataframe(periods=90)
+        future = m.make_future_dataframe(periods=mask_Prediccion)
         forecast = m.predict(future)
 
         # Añade el día de la semana a las predicciones
