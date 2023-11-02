@@ -181,7 +181,7 @@ with st.container():
         st.write("Esta imagen muestra Por Horas del Dia")
     
         # Ahora puedes acceder al día de la semana usando el atributo 'dayofweek'
-        df['Hora_del_dia'] = df['FECHA_LLEGADA'].dt.hour
+        df['Hora_del_dia'] = df[mask]['FECHA_LLEGADA'].dt.hour
 
         promedio = df[mask]['Tiempo_Minutos_Total'].median()
         df[mask].loc[df[mask]['Tiempo_Minutos_Total'] > 420, 'Tiempo_Minutos_Total'] = promedio
