@@ -97,12 +97,12 @@ with st.container():
   @st.cache_data
   def calculate_kpis(df: pd.DataFrame) -> List[float]:
         total_minutos1 =(df[mask]['Tiempo_Minutos_Total'].sum())
-        Total_minutos = f"{total_minutos1:.2f}M"
+        Total_minutos = f"{total_minutos1:.1f}M"
         total_pacientes = df[mask]['PACIENTE_#_DOCUMENTO'].nunique()
-        Promedio_minutos = f"{total_minutos1 / numero_resultados:.2f}K"
-        Promedio_minutos2 =(df[mask]['Tiempo_Minutos_Total'].mean())
-        promedio = f"{Promedio_minutos2:.2f}K"
-        return [Total_minutos, total_pacientes, promedio, numero_resultados]
+        Promedio_minutos = f"{total_minutos1 / numero_resultados:.1f}Min"
+        Promedio_minutos2 =(df[mask]['Tiempo_Minutos_Total'].min())
+        promedio = f"{Promedio_minutos2:.1f}Min"
+        return [Promedio_minutos, total_pacientes, promedio, numero_resultados]
   
 
   def display_kpi_metrics(kpis: List[float], kpi_names: List[str]):
@@ -116,10 +116,10 @@ with st.container():
         total_minutos1 =(df[mask]['Tiempo_Minutos_Total'].sum())
         Total_minutos = f"{total_minutos1:.2f}M"
         total_pacientes = df[mask]['PACIENTE_#_DOCUMENTO'].nunique()
-        Promedio_minutos = f"{total_minutos1 / numero_resultados:.2f}K"
-        Promedio_minutos2 =(df[mask]['Tiempo_Minutos_Total'].mean())
+        Promedio_minutos = f"{total_minutos1 / total_pacientes:.2f}K"
+        Promedio_minutos2 =(df[mask]['Tiempo_Minutos_Total'].median())
         promedio = f"{Promedio_minutos2:.2f}K"
-        return [Total_minutos, total_pacientes, promedio, numero_resultados]
+        return [promedio, total_pacientes, Promedio_minutos, numero_resultados]
   
 
   def display_kpi_metricsp(kpis: List[float], kpi_names: List[str]):
@@ -132,7 +132,7 @@ with st.container():
     st.header("Historico de Tiempo de Espera de Atencion de Pacientes")
 
     kpis = calculate_kpis(df)
-    kpi_names = ["Vlr_Ventas", "Cantidad Pacientes", "Promedio Minutos", "Cantidad Atenciones"]
+    kpi_names = ["Promedio Minutos", "Cantidad Pacientes", "Minutos Minimo", "Cantidad Atenciones"]    
     display_kpi_metrics(kpis, kpi_names)
    
     left_column , right_column = st.columns(2)
