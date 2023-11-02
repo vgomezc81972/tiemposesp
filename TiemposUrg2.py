@@ -151,8 +151,8 @@ with st.container():
         df['day_of_week'] = df[mask]['FECHA_LLEGADA'].dt.dayofweek
 
         promedio = df[mask]['Tiempo_Minutos_Total'].median()
-        df.loc[df[mask]['Tiempo_Minutos_Total'] > 420, 'Tiempo_Minutos_Total'] = promedio
-        df.loc[df[mask]['Tiempo_Minutos_Total'] < 0, 'Tiempo_Minutos_Total'] = promedio
+        df[mask].loc[df[mask]['Tiempo_Minutos_Total'] > 420, 'Tiempo_Minutos_Total'] = promedio
+        df[mask].loc[df[mask]['Tiempo_Minutos_Total'] < 0, 'Tiempo_Minutos_Total'] = promedio
 
         # Calcula el promedio de las predicciones para cada día de la semana
         average_predicted_minutes = df.groupby('day_of_week')['Tiempo_Minutos_Total'].mean()
