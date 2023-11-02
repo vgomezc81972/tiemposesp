@@ -6,6 +6,7 @@
 import streamlit as st
 import types  # Importa types en lugar de builtins
 import pandas as pd
+from prophet import Prophet
 import matplotlib.pyplot as plt
 import seaborn as sns
 from typing import List, Tuple
