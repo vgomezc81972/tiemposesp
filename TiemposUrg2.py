@@ -181,21 +181,24 @@ with st.container():
         st.write("Esta imagen muestra Por Horas del Dia")
     
         # Ahora puedes acceder al día de la semana usando el atributo 'dayofweek'
-        df['Hora_del_dia'] = df[mask]['FECHA_LLEGADA'].dt.hour
+        df['day_of_week'] = df[mask]['FECHA_LLEGADA'].dt.dayofweek
 
         promedio = df[mask]['Tiempo_Minutos_Total'].median()
         df[mask].loc[df[mask]['Tiempo_Minutos_Total'] > 420, 'Tiempo_Minutos_Total'] = promedio
         df[mask].loc[df[mask]['Tiempo_Minutos_Total'] < 0, 'Tiempo_Minutos_Total'] = promedio
 
         # Calcula el promedio de las predicciones para cada día de la semana
-        average_predicted_minutes = df.groupby('Hora_del_dia')['Tiempo_Minutos'].mean()
+        average_predicted_minutes = df.groupby('day_of_week')['Tiempo_Minutos_Total'].mean()
+
+        # Establece los índices explícitamente
+        average_predicted_minutes.index = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
 
         # Trazar el gráfico de barras
         fig, ax = plt.subplots(figsize=(10, 6))
         sns.barplot(x=average_predicted_minutes.index, y=average_predicted_minutes.values, palette='viridis', ax=ax)
-        ax.set_xlabel('Hora del Dia')
+        ax.set_xlabel('Día de la Semana')
         ax.set_ylabel('Promedio del Tiempo (minutos)')
-        ax.set_title('Promedio del Tiempo por Hora del Dia')
+        ax.set_title('Promedio del Tiempo por Día de la Semana')
 
         # Añade etiquetas a las barras
         for i, bar in enumerate(ax.patches):
