@@ -34,37 +34,18 @@ def load_data(url):
 url = "https://github.com/Vitotoju/Compensar/raw/main/tiempos_urgencias.xlsx"
 #url = "https://github.com/Vitotoju/tiemposurgencias/blob/main/tiempos_urgencias.xlsx"
 dataset = load_data(url)
-
-# crear la lista headers
-#headers = ["FECHA_LLEGADA","FECHA_TRIAGE","FECHA_INGRESO","FECHA_ATENCION","TIEMPO_DGTURNO_A_TRIAGE","TIEMPO_TRIAGE_A_INGRESO","TIEMPO_INGRESO_A_CONSULTA","TIEMPO_TOTAL","Tiempo_Minutos_Total",
-#           "CENTRO_ATENCION","CLASIFICACION_TRIAGE","PACIENTE_#_DOCUMENTO","EDAD","EDAD_RANGO","SEXO","RÉGIMEN PACIENTE","NOMBRE_ENTIDAD","MEDICO","AÑO","MES","DIA_SEMANA","HOUR","Turnos","TIME","DIA"]
-#dataset.columns = headers
 df = dataset
-
-#df['Tiempo_Minutos'] = df['Tiempo_Minutos_Total']
 
 # Asegúrate de que la columna 'ds' sea de tipo datetime
 df['FECHA_LLEGADA'] = pd.to_datetime(df['FECHA_LLEGADA'])
-
-# Ahora puedes acceder al día de la semana usando el atributo 'dayofweek'
-#df['day_of_week'] = df['FECHA_LLEGADA'].dt.dayofweek
-
-# Ahora puedes acceder al día de la semana usando el atributo 'dayofweek'
-#df['Hora_del_dia'] = df['FECHA_LLEGADA'].dt.hour
 
 # Cadena Más Común (Moda)  -  para reemplazar los datos vacios con el valor más frecuente o la moda
 promedio = df['Tiempo_Minutos_Total'].median()
 df.loc[df['Tiempo_Minutos_Total'] > 420, 'Tiempo_Minutos_Total'] = promedio
 df.loc[df['Tiempo_Minutos_Total'] < 0, 'Tiempo_Minutos_Total'] = promedio
 
-# eliminar la primera fila de cabecera (del excel cargado)
-#df = df.drop([0], axis=0)
-
-#Actualización del index
-#df.reset_index(drop=True)
 
 #Convertir el tipo de datos al formato apropiado 
-
 st.sidebar.header("Opciones a filtrar: ")
 
 # Filtros Laterales
@@ -99,13 +80,6 @@ with st.container():
   st.title("📊 Tiempos Atencion de Urgencias")
   st.write(" Esta es una pagina para mostrar los resultados")
 
-  #anual_selector = st.slider('Año de Atencion Urgencias :',
-  #                         min_value = min(filtro_anos),
-  #                         max_value = max(filtro_anos),
-  #                         value = (min(filtro_anos),max(filtro_anos))
-  #                         )
-
-# Aplicar filtros a los datos
 
   # Combinar las máscaras de filtro
   mask = mask_centro & mask_mes & mask_clasificacion
@@ -133,15 +107,14 @@ with st.container():
   kpi_names = ["Vlr_Ventas", "Cantidad Pacientes", "Promedio Minutos", "Cantidad Pacientes"]
   display_kpi_metrics(kpis, kpi_names)
 
-
   st.write("---")
-  st.subheader("Top 10 Atenciones")
-  st.write(df[mask].head(10))
+  #st.subheader("Top 10 Atenciones")
+  #st.write(df[mask].head(10))
 
 with st.container():
     st.write("---")
+    st.header("Tiempos de Atencion de pacientes  Historica en la Sala de Urgencias")
     left_column , right_column = st.columns(2)
-    st.header("Tiempo de Espera")
 
     with left_column:
         st.header("DIA DE LA SEMANA")
