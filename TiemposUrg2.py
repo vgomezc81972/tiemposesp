@@ -34,17 +34,37 @@ def load_data(url):
 url = "https://github.com/Vitotoju/Compensar/raw/main/tiempos_urgencias.xlsx"
 #url = "https://github.com/Vitotoju/tiemposurgencias/blob/main/tiempos_urgencias.xlsx"
 dataset = load_data(url)
+
+# crear la lista headers
+#headers = ["FECHA_LLEGADA","FECHA_TRIAGE","FECHA_INGRESO","FECHA_ATENCION","TIEMPO_DGTURNO_A_TRIAGE","TIEMPO_TRIAGE_A_INGRESO","TIEMPO_INGRESO_A_CONSULTA","TIEMPO_TOTAL","Tiempo_Minutos_Total",
+#           "CENTRO_ATENCION","CLASIFICACION_TRIAGE","PACIENTE_#_DOCUMENTO","EDAD","EDAD_RANGO","SEXO","RÉGIMEN PACIENTE","NOMBRE_ENTIDAD","MEDICO","AÑO","MES","DIA_SEMANA","HOUR","Turnos","TIME","DIA"]
+#dataset.columns = headers
 df = dataset
 
+#df['Tiempo_Minutos'] = df['Tiempo_Minutos_Total']
 
+# Asegúrate de que la columna 'ds' sea de tipo datetime
+df['FECHA_LLEGADA'] = pd.to_datetime(df['FECHA_LLEGADA'])
+
+# Ahora puedes acceder al día de la semana usando el atributo 'dayofweek'
+#df['day_of_week'] = df['FECHA_LLEGADA'].dt.dayofweek
+
+# Ahora puedes acceder al día de la semana usando el atributo 'dayofweek'
+#df['Hora_del_dia'] = df['FECHA_LLEGADA'].dt.hour
 
 # Cadena Más Común (Moda)  -  para reemplazar los datos vacios con el valor más frecuente o la moda
 promedio = df['Tiempo_Minutos_Total'].median()
 df.loc[df['Tiempo_Minutos_Total'] > 420, 'Tiempo_Minutos_Total'] = promedio
 df.loc[df['Tiempo_Minutos_Total'] < 0, 'Tiempo_Minutos_Total'] = promedio
 
+# eliminar la primera fila de cabecera (del excel cargado)
+#df = df.drop([0], axis=0)
+
+#Actualización del index
+#df.reset_index(drop=True)
 
 #Convertir el tipo de datos al formato apropiado 
+
 st.sidebar.header("Opciones a filtrar: ")
 
 # Filtros Laterales
@@ -79,6 +99,13 @@ with st.container():
   st.title("📊 Tiempos Atencion de Urgencias")
   st.write(" Esta es una pagina para mostrar los resultados")
 
+  #anual_selector = st.slider('Año de Atencion Urgencias :',
+  #                         min_value = min(filtro_anos),
+  #                         max_value = max(filtro_anos),
+  #                         value = (min(filtro_anos),max(filtro_anos))
+  #                         )
+
+# Aplicar filtros a los datos
 
   # Combinar las máscaras de filtro
   mask = mask_centro & mask_mes & mask_clasificacion
@@ -103,82 +130,48 @@ with st.container():
 
 
   kpis = calculate_kpis(df)
-  kpi_names = ["Total Minutos", "Cantidad Pacientes", "Promedio Minutos", "Cantidad Pacientes"]
+  kpi_names = ["Vlr_Ventas", "Cantidad Pacientes", "Promedio Minutos", "Cantidad Pacientes"]
   display_kpi_metrics(kpis, kpi_names)
 
+
   st.write("---")
-  #st.subheader("Top 10 Atenciones")
-  #st.write(df[mask].head(10))
+  st.subheader("Top 10 Atenciones")
+  st.write(df[mask].head(10))
 
 with st.container():
     st.write("---")
-    st.header("Tiempos de Atencion de pacientes  Historica en la Sala de Urgencias")
     left_column , right_column = st.columns(2)
-
-    with left_column:
-        st.header("DIA DE LA SEMANA")
-        st.write("Esta imagen muestra Por dias de la semana del Dia")
+    st.header("Tiempo de Espera")
+    st.write("Esta imagen muestra Por Horas del Dia")
     
-    # Asegúrate de que la columna 'ds' sea de tipo datetime
-        df[mask]['FECHA_LLEGADA'] = pd.to_datetime(df[mask]['FECHA_LLEGADA'])
+# Ahora puedes acceder al día de la semana usando el atributo 'dayofweek'
+    df['day_of_week'] = df['FECHA_LLEGADA'].dt.dayofweek
 
-    #   Ahora puedes acceder al día de la semana usando el atributo 'dayofweek'
-        df[mask]['day_of_week'] = df[mask]['FECHA_LLEGADA'].dt.dayofweek
+    promedio = df['Tiempo_Minutos_Total'].median()
+    df.loc[df['Tiempo_Minutos_Total'] > 420, 'Tiempo_Minutos_Total'] = promedio
+    df.loc[df['Tiempo_Minutos_Total'] < 0, 'Tiempo_Minutos_Total'] = promedio
 
-        promedio = df[mask]['Tiempo_Minutos_Total'].median()
-        df[mask].loc[df[mask]['Tiempo_Minutos_Total'] > 420, 'Tiempo_Minutos_Total'] = promedio
-        df[mask].loc[df[mask]['Tiempo_Minutos_Total'] < 0, 'Tiempo_Minutos_Total'] = promedio
+# Calcula el promedio de las predicciones para cada día de la semana
+    average_predicted_minutes = df.groupby('day_of_week')['Tiempo_Minutos_Total'].mean()
 
-    # Calcula el promedio de las predicciones para cada día de la semana
-        average_predicted_minutes = df[mask].groupby('day_of_week')['Tiempo_Minutos_Total'].mean()
-
-    # Establece los índices explícitamente
-        average_predicted_minutes.index = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
+# Establece los índices explícitamente
+    average_predicted_minutes.index = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
 
     # Trazar el gráfico de barras
-        fig, ax = plt.subplots(figsize=(10, 6))
-        sns.barplot(x=average_predicted_minutes.index, y=average_predicted_minutes.values, palette='viridis', ax=ax)
-        ax.set_xlabel('Día de la Semana')
-        ax.set_ylabel('Promedio del Tiempo (minutos)')
-        ax.set_title('Promedio del Tiempo por Día de la Semana')
+    fig, ax = plt.subplots(figsize=(10, 6))
+    sns.barplot(x=average_predicted_minutes.index, y=average_predicted_minutes.values, palette='viridis', ax=ax)
+    ax.set_xlabel('Día de la Semana')
+    ax.set_ylabel('Promedio del Tiempo (minutos)')
+    ax.set_title('Promedio del Tiempo por Día de la Semana')
 
     # Añade etiquetas a las barras
-        for i, bar in enumerate(ax.patches):
-            yval = bar.get_height()
-            xval = bar.get_x() + bar.get_width() / 2
-            ax.text(xval, yval, f"{round(yval, 2)}", ha='center', va='bottom')
+    for i, bar in enumerate(ax.patches):
+        yval = bar.get_height()
+        xval = bar.get_x() + bar.get_width() / 2
+        ax.text(xval, yval, f"{round(yval, 2)}", ha='center', va='bottom')
+
 
     # Muestra la figura en Streamlit
-        st.pyplot(fig)
-
-    with right_column:
-        st.header("HORAS DEL DIA")
-        st.write("Esta imagen muestra Por Horas del Dia")
-    
-    #   Ahora puedes acceder al día de la semana usando el atributo 'dayofweek'
-        df[mask]['Hora_del_dia'] = df[mask]['FECHA_LLEGADA'].dt.hour
-
-        promedio = df[mask]['Tiempo_Minutos_Total'].median()
-        df[mask].loc[df[mask]['Tiempo_Minutos_Total'] > 420, 'Tiempo_Minutos_Total'] = promedio
-        df[mask].loc[df[mask]['Tiempo_Minutos_Total'] < 0, 'Tiempo_Minutos_Total'] = promedio
-
-    # Calcula el promedio de las predicciones para cada día de la semana
-        average_predicted_minutes = df[mask].groupby('Hora_del_dia')['Tiempo_Minutos_Total'].mean()
-
-    # Trazar el gráfico de barras
-        fig, ax = plt.subplots(figsize=(10, 6))
-        sns.barplot(x=average_predicted_minutes.index, y=average_predicted_minutes.values, palette='viridis', ax=ax)
-        ax.set_xlabel('Hora del Dia')
-        ax.set_ylabel('Promedio del Tiempo (minutos)')
-        ax.set_title('Promedio del Tiempo por Día de la Semana')
-
-    # Añade etiquetas a las barras
-        for i, bar in enumerate(ax.patches):
-            yval = bar.get_height()
-            xval = bar.get_x() + bar.get_width() / 2
-            ax.text(xval, yval, f"{round(yval, 2)}", ha='center', va='bottom')
-
-    # Muestra la figura en Streamlit
-        st.pyplot(fig)        
+    st.pyplot(fig)
 
 # %%
